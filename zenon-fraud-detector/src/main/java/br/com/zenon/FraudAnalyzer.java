@@ -16,13 +16,13 @@ public class FraudAnalyzer {
         this.transactions = transactions;
     }
 
-    public long contarFrauds() {
+    public long countFrauds() {
         return transactions.stream()
                 .filter(Transaction::isFraud)
                 .count();
     }
 
-    public List<BigDecimal> buscarAsMaioresFraudes(int quantidade) {
+    public List<BigDecimal> findhiggestsFrauds(int quantidade) {
         return transactions.stream()
                 .filter(Transaction::isFraud)
                 .sorted(Comparator.comparing(Transaction::amount).reversed())
@@ -40,14 +40,14 @@ public class FraudAnalyzer {
 
     }
 
-    public BigDecimal calcularTotalFraudes(){
+    public BigDecimal totalFraudAmount(){
         return transactions.stream()
                 .filter(Transaction::isFraud)
                 .map(Transaction::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Map<TransactionType, Long> ContagemFraudPorTipo() {
+    public Map<TransactionType, Long> aggregateFraudulentTransactions() {
         return transactions.stream()
                 .filter(Transaction::isFraud)
                 .collect(Collectors.groupingBy(Transaction::type, Collectors.counting()));
