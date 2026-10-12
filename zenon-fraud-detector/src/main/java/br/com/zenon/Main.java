@@ -29,7 +29,7 @@ public class Main {
 //        IO.println(t2.toString());
 //
 //        IO.println();
-//        IO.println("******************************* Ingeastão de dados  - Fim ****************************************************");
+//        IO.println("******************************* Records  - Fim ****************************************************");
 //        IO.println();
 //
 //        IO.println();
@@ -42,7 +42,7 @@ public class Main {
 //        transactions.stream().limit(10).forEach(IO::println);
 //
 //        IO.println();
-//        IO.println("******************************* Ingeastão de dados  - Fim ****************************************************");
+//        IO.println("******************************* Ingestão de dados  - Fim ****************************************************");
 //        IO.println();
 //
 //
@@ -60,33 +60,63 @@ public class Main {
 //        IO.println();
 
 
+//        IO.println();
+//        IO.println("******************************* Stream - Início ****************************************************");
+//        IO.println();
+//
+//        List<Transaction> transactions = transactionIngestor.readFile("data/PS_20174392719_1491204439457_log.csv");
+//        var fraudAnalyzer = new FraudAnalyzer(transactions);
+//
+//        long totalFraudes = fraudAnalyzer.contarFrauds();
+//        IO.println("Total de fraudes: " + totalFraudes);
+//
+//        IO.println("Top 3 maiores fraudes: ");
+//        List<BigDecimal> maioresFraudes = fraudAnalyzer.buscarAsMaioresFraudes(3);
+//        maioresFraudes.forEach(amount -> IO.println("- %.2f".formatted(amount)));
+//
+//        IO.println("Top 5 clientes suspeitos: ");
+//        List<String> suspeitos = fraudAnalyzer.maioresClientesSuspeitos(5);
+//        suspeitos.forEach(IO::println);
+//
+//        BigDecimal totalPerdidoFraudes = fraudAnalyzer.calcularTotalFraudes();
+//        IO.println("Total de fraudes: " + totalPerdidoFraudes );
+//
+//        Map<TransactionType, Long> contagemFraudPorTipo = fraudAnalyzer.ContagemFraudPorTipo();
+//        IO.println("Contagem de fraudes por tipo: ");
+//        contagemFraudPorTipo.forEach((k,v) -> IO.println(k + " : " + v));
+//
+//        IO.println();
+//        IO.println("******************************* Stream - Fim ****************************************************");
+//        IO.println();
+
         IO.println();
-        IO.println("******************************* Stream - Início ****************************************************");
+        IO.println("******************************* Benchmark - Início ****************************************************");
         IO.println();
 
         List<Transaction> transactions = transactionIngestor.readFile("data/PS_20174392719_1491204439457_log.csv");
-        var fraudAnalyzer = new FraudAnalyzer(transactions);
+        String nameClient = "C1868032458";
 
-        long totalFraudes = fraudAnalyzer.contarFrauds();
-        IO.println("Total de fraudes: " + totalFraudes);
+        TransactionRepository transactionRepository;
 
-        IO.println("Top 3 maiores fraudes: ");
-        List<BigDecimal> maioresFraudes = fraudAnalyzer.buscarAsMaioresFraudes(3);
-        maioresFraudes.forEach(amount -> IO.println("- %.2f".formatted(amount)));
+        transactionRepository = new TransactionListRepository(transactions);
 
-        IO.println("Top 5 clientes suspeitos: ");
-        List<String> suspeitos = fraudAnalyzer.maioresClientesSuspeitos(5);
-        suspeitos.forEach(IO::println);
+        long startTimeList = System.nanoTime();
+        transactionRepository.findByOriginName(nameClient).ifPresentOrElse(IO::println, () -> IO.println("Transação não encontrada para: " + nameClient));
+        long endTimeList = System.nanoTime();
 
-        BigDecimal totalPerdidoFraudes = fraudAnalyzer.calcularTotalFraudes();
-        IO.println("Total de fraudes: " + totalPerdidoFraudes );
+        IO.println("Tempo de busca - LISTA (ms) = " + (endTimeList - startTimeList)/ 1_000_000.0);
 
-        Map<TransactionType, Long> contagemFraudPorTipo = fraudAnalyzer.ContagemFraudPorTipo();
-        IO.println("Contagem de fraudes por tipo: ");
-        contagemFraudPorTipo.forEach((k,v) -> IO.println(k + " : " + v));
+        transactionRepository = new TransactionMapRepository(transactions);
+
+        long startTimeMap = System.nanoTime();
+        transactionRepository.findByOriginName(nameClient).ifPresentOrElse(IO::println, () -> IO.println("Transação não encontrada para: " + nameClient));
+        long endTimeMap = System.nanoTime();
+
+        IO.println("Tempo de busca - MAP (ms) = " + (endTimeMap - startTimeMap)/ 1_000_000.0);
+
 
         IO.println();
-        IO.println("******************************* Stream - Fim ****************************************************");
+        IO.println("******************************* Benchmark - Fim ****************************************************");
         IO.println();
 
 
