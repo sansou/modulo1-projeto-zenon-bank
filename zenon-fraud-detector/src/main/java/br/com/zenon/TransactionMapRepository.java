@@ -24,4 +24,9 @@ public class TransactionMapRepository implements TransactionRepository {
     public Optional<Transaction> findByOriginName(String originName) {
         return Optional.ofNullable(transactionsByOriginName.get(originName));
     }
+
+    @Override
+    public void save(Transaction transaction) {
+        this.transactionsByOriginName.putIfAbsent(transaction.origin().name(), transaction);
+    }
 }
